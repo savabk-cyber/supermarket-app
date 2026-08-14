@@ -41,9 +41,9 @@
 </head>
 <body>
     <div id="offlineOverlay">
-        <div class="icon">📡</div>
-        <h2 id="statusTitle">Checking connection…</h2>
-        <p id="statusText">One moment.</p>
+        <img src="icon-192.png" alt="Supermarket Expenses" style="width:72px; height:72px; border-radius:16px; margin-bottom:12px;">
+        <h2 id="statusTitle" style="font-weight:800;">You are Offline</h2>
+        <p id="statusText" style="font-weight:400;">Checking connection…</p>
         <button id="retryBtn" onclick="checkConnectivity()" style="display:none;">Try Again</button>
     </div>
 
@@ -60,8 +60,7 @@
         const retryBtn = document.getElementById('retryBtn');
 
         function checkConnectivity() {
-            statusTitle.textContent = 'Checking connection…';
-            statusText.textContent = 'One moment.';
+            statusText.textContent = 'Checking connection…';
             retryBtn.style.display = 'none';
 
             const controller = new AbortController();
@@ -88,7 +87,6 @@
         }
 
         function showOfflineMessage() {
-            statusTitle.textContent = 'No Connection';
             statusText.textContent = "Can't reach the app right now. Try again once you have signal.";
             retryBtn.style.display = 'inline-block';
             overlay.classList.remove('hidden');
