@@ -8,11 +8,94 @@
     <link rel="apple-touch-icon" href="icon-192.png">
     <link rel="icon" type="image/png" href="icon-192.png">
     <style>
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; }
-        iframe { border: none; width: 100%; height: 100%; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; font-family: -apple-system, Roboto, Arial, sans-serif; }
+        iframe { border: none; width: 100%; height: 100%; display: none; }
+
+        #offlineOverlay {
+            display: flex;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: #f4f5f7;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        #offlineOverlay .icon { font-size: 48px; margin-bottom: 12px; }
+        #offlineOverlay h2 { margin: 0 0 8px; color: #333; font-size: 20px; }
+        #offlineOverlay p { margin: 0 0 20px; color: #666; font-size: 14px; }
+        #offlineOverlay button {
+            padding: 12px 24px;
+            font-size: 15px;
+            font-weight: 700;
+            background: #4a86e8;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        #offlineOverlay.hidden { display: none; }
     </style>
 </head>
 <body>
-    <iframe src="https://script.google.com/macros/s/AKfycbyG7tJ7lcC6LwQnO4tF70Qv9H4RouuPddSIujNuc3PsbxZNxwcKEFdxP1Lpr1UBS-xq/exec"></iframe>
+    <div id="offlineOverlay">
+        <div class="icon">📡</div>
+        <h2 id="statusTitle">Checking connection…</h2>
+        <p id="statusText">One moment.</p>
+        <button id="retryBtn" onclick="checkConnectivity()" style="display:none;">Try Again</button>
+    </div>
+
+    <iframe id="appFrame"></iframe>
+
+    <script>
+        const APP_URL = 'https://script.google.com/macros/s/AKfycbyG7tJ7lcC6LwQnO4tF70Qv9H4RouuPddSIujNuc3PsbxZNxwcKEFdxP1Lpr1UBS-xq/exec';
+        const PING_URL = 'https://www.gstatic.com/generate_204';
+
+        const overlay = document.getElementById('offlineOverlay');
+        const frame = document.getElementById('appFrame');
+        const statusTitle = document.getElementById('statusTitle');
+        const statusText = document.getElementById('statusText');
+        const retryBtn = document.getElementById('retryBtn');
+
+        function checkConnectivity() {
+            statusTitle.textContent = 'Checking connection…';
+            statusText.textContent = 'One moment.';
+            retryBtn.style.display = 'none';
+
+            const controller = new AbortController();
+            const timeoutId = setTimeout(function() { controller.abort(); }, 4000);
+
+            fetch(PING_URL, { mode: 'no-cors', cache: 'no-store', signal: controller.signal })
+                .then(function() {
+                    clearTimeout(timeoutId);
+                    loadApp();
+                })
+                .catch(function() {
+                    clearTimeout(timeoutId);
+                    showOfflineMessage();
+                });
+        }
+
+        function loadApp() {
+            // Load the real app once — after this, we step out of the way
+            // entirely and let the app's own offline queue handle anything
+            // that happens while it's already running.
+            frame.src = APP_URL;
+            frame.style.display = 'block';
+            overlay.classList.add('hidden');
+        }
+
+        function showOfflineMessage() {
+            statusTitle.textContent = 'No Connection';
+            statusText.textContent = "Can't reach the app right now. Try again once you have signal.";
+            retryBtn.style.display = 'inline-block';
+            overlay.classList.remove('hidden');
+            frame.style.display = 'none';
+        }
+
+        checkConnectivity();
+    </script>
 </body>
 </html>
