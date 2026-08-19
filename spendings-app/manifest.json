@@ -1,7 +1,7 @@
 {
   "name": "Spendings PhoneApp",
   "short_name": "Spend Money",
-  "start_url": "PASTE_YOUR_APP_URL_HERE",
+  "start_url": "https://script.google.com/macros/s/AKfycbxL4uSNTSjP7t2Vb_7iovh7KQg6yjJqwEuIr0YwKN6srzRSVKpPyZTU1CJfm0OKGIqe/exec?app=spend",
   "display": "standalone",
   "background_color": "#f4f6f8",
   "theme_color": "#4a90e2",
